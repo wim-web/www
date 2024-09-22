@@ -2,12 +2,12 @@ export interface Timing {
     allow: (input: {
         key: string,
         date: Date,
-    }) => boolean;
+    }) => Promise<boolean>;
     complete: (input: {
         key: string,
         constraint: TimeConstraint,
         date: Date,
-    }) => void;
+    }) => Promise<void>;
 }
 
 export interface TimeConstraint {

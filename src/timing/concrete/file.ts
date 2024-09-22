@@ -34,7 +34,7 @@ export class FileTiming implements Timing {
         fs.writeFileSync(this.filepath, JSON.stringify(this.locker), 'utf-8')
     }
 
-    allow({
+    async allow({
         key,
         date,
     }: {
@@ -51,7 +51,7 @@ export class FileTiming implements Timing {
         return date >= nextTime
     }
 
-    complete({
+    async complete({
         key,
         constraint,
         date,
