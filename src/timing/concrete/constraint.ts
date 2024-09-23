@@ -1,6 +1,6 @@
 
 import { TimeConstraint } from "@/timing/contract"
-import { AtLeastOne } from "@/util_types"
+import { AtLeastOne } from "@/util/types"
 
 export class Rate implements TimeConstraint {
     constructor(private readonly param: AtLeastOne<{

@@ -2,14 +2,28 @@ import { TimeConstraint, Timing } from "@/timing/contract";
 import { Redis } from "ioredis";
 
 type RedisTimingInput = {
-    host: string, port: number
+    host: string, port: number, keyPrefix?: string
+}
+
+export const withRedisTiming = async (input: RedisTimingInput, f: (timing: RedisTiming) => Promise<void>) => {
+    const timing = new RedisTiming(input)
+
+    try {
+        await f(timing)
+    } finally {
+        await timing.terminate()
+    }
 }
 
 export class RedisTiming implements Timing {
     private client
 
-    constructor({ host, port }: RedisTimingInput) {
-        this.client = new Redis(port, host)
+    constructor({ host, port, keyPrefix }: RedisTimingInput) {
+        this.client = new Redis({
+            host,
+            port,
+            keyPrefix
+        })
     }
 
     async allow({
@@ -34,5 +48,9 @@ export class RedisTiming implements Timing {
         if (ttl > 0) {
             await this.client.set(key, '', 'EX', ttl); // TTLを設定してキーを保存
         }
+    }
+
+    async terminate() {
+        await this.client.quit()
     }
 }

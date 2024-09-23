@@ -41,7 +41,6 @@ export class FileTiming implements Timing {
         key: string,
         date: Date,
     }) {
-        console.log(this.locker)
         if (this.locker[key] === undefined) {
             return true
         }
