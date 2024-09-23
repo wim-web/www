@@ -1,3 +1,4 @@
+import { logger } from "@/log"
 import { TimeConstraint, Timing } from "@/timing/contract"
 import { calculateMilliseconds } from "@/util/function"
 import { setTimeout } from "timers/promises"
@@ -21,6 +22,7 @@ export class Scheduler {
     ) { }
 
     async run() {
+        logger.debug(`run`, { mode: this.mode._type })
         switch (this.mode._type) {
             case 'shot':
                 await this.oneCycle()
@@ -33,6 +35,7 @@ export class Scheduler {
 
     private async oneCycle() {
         for (const task of this.tasks) {
+            logger.info(`start ${task.name}`, { task_name: task.name })
             try {
                 const input = {
                     key: task.name,
@@ -48,6 +51,7 @@ export class Scheduler {
                     ...input,
                     constraint: task.constraint
                 })
+                logger.info(`end ${task.name}`, { task_name: task.name })
             } catch (e) {
                 //
             }
@@ -57,7 +61,6 @@ export class Scheduler {
     private async loop(oneCycleTime: { h: number, m: number }) {
         // ループの最低時間
         const totalSleepMs = calculateMilliseconds(oneCycleTime);
-        // const logger = makeLogger({ headers: [] })
         let running = true
         const controller = new AbortController();
 
@@ -80,23 +83,27 @@ export class Scheduler {
             while (running) {
                 // スタート時刻を計測
                 const startTime = Date.now()
+                logger.debug("start oneCycle")
 
                 await this.oneCycle()
 
                 const endTime = Date.now()
+                logger.debug("end oneCycle")
                 const elapsedTime = endTime - startTime // 処理にかかった時間を計測
 
                 // 残り時間の計算
                 const remainingSleepTime = totalSleepMs - elapsedTime
 
                 if (remainingSleepTime > 0 && running) {
+                    logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1000, sleep_time_m: remainingSleepTime / (1000 * 60) })
                     await setTimeout(remainingSleepTime, null, { signal: controller.signal }) // 残り時間をスリープ
-                    // logger.info(`sleep ${remainingSleepTime}`)
                 }
             }
         } catch (e) {
             if (e instanceof Error && e.name === "AbortError") {
+                logger.info("", e)
                 // 正常なのでスルー
+                logger.debug("stopping")
             } else {
                 throw e
             }

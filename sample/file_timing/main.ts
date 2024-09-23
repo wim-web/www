@@ -1,11 +1,13 @@
 import { Scheduler } from '../../src/scheduler/index'
 import { FileTiming } from '../../src/timing/concrete/file'
+import { enableLog } from '../../src/log'
 import {
     Rate
 } from '../../src/timing/concrete/constraint'
 
 
 async function main() {
+    enableLog("debug")
     const timing = new FileTiming("./json.json")
 
     const s = new Scheduler(
