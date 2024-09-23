@@ -3,12 +3,10 @@ import { withRedisTiming } from '../../src/timing/concrete/redis'
 import {
     Rate
 } from '../../src/timing/concrete/constraint'
-import { enableLog } from '../../src/log'
+import { defaultLogger } from '../../dist'
 
 
 async function main() {
-    enableLog("debug")
-
     await withRedisTiming({
         host: "localhost", port: 6666, keyPrefix: "test"
     }, async (timing) => {
@@ -20,7 +18,8 @@ async function main() {
                 name: "simple",
                 constraint: new Rate({ m: 1 }),
                 fn: async () => { console.log("simple") }
-            }]
+            }],
+            defaultLogger("debug")
         )
 
 
