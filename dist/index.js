@@ -1,25 +1,31 @@
 // src/log.ts
 import { createLogger, format, transports } from "winston";
-var logger = createLogger({
-  transports: [
-    new transports.Console({
-      silent: true
-    })
-  ]
-});
-var enableLog = (level) => {
-  logger.level = level;
-  logger.configure({
+var noneLogger = () => {
+  return createLogger({
+    transports: [
+      new transports.Console({
+        silent: true
+      })
+    ]
+  });
+};
+var defaultLogger = (level) => {
+  return createLogger({
+    level,
     format: format.combine(
       format.timestamp(),
       format.json()
     ),
     transports: [
-      new transports.Console()
+      new transports.Console({
+        silent: false
+        // ログ出力を有効化
+      })
     ]
   });
 };
 export {
-  enableLog
+  defaultLogger,
+  noneLogger
 };
 //# sourceMappingURL=index.js.map

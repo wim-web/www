@@ -1,1 +1,1 @@
-export { enableLog } from './log';
+export * from './log';

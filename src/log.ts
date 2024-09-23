@@ -1,22 +1,26 @@
-import { createLogger, format, transports } from "winston";
+import { createLogger, format, Logger, transports } from "winston";
 
-export let logger = createLogger({
-    transports: [
-        new transports.Console({
-            silent: true
-        })
-    ]
-})
+export const noneLogger = (): Logger => {
+    return createLogger({
+        transports: [
+            new transports.Console({
+                silent: true
+            })
+        ]
+    })
+}
 
-export const enableLog = (level: string) => {
-    logger.level = level;
-    logger.configure({
+export const defaultLogger = (level: string): Logger => {
+    return createLogger({
+        level,
         format: format.combine(
             format.timestamp(),
-            format.json(),
+            format.json()
         ),
         transports: [
-            new transports.Console()
+            new transports.Console({
+                silent: false // ログ出力を有効化
+            })
         ]
-    });
+    })
 }

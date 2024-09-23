@@ -1,3 +1,6 @@
-declare const enableLog: (level: string) => void;
+import { Logger } from 'winston';
 
-export { enableLog };
+declare const noneLogger: () => Logger;
+declare const defaultLogger: (level: string) => Logger;
+
+export { defaultLogger, noneLogger };

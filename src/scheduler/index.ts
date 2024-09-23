@@ -1,7 +1,8 @@
-import { logger } from "@/log"
+import { noneLogger } from "@/log"
 import { TimeConstraint, Timing } from "@/timing/contract"
 import { calculateMilliseconds } from "@/util/function"
 import { setTimeout } from "timers/promises"
+import { Logger } from "winston"
 
 export type Mode = (ShotMode | LoopMode) & { _type: string }
 
@@ -15,14 +16,19 @@ export type LoopMode = {
 }
 
 export class Scheduler {
+    private readonly logger: Logger
+
     constructor(
         private readonly mode: Mode,
         private readonly timing: Timing,
         private readonly tasks: Task[],
-    ) { }
+        logger?: Logger,
+    ) {
+        this.logger = logger || noneLogger()
+    }
 
     async run() {
-        logger.debug(`run`, { mode: this.mode._type })
+        this.logger.debug(`run`, { mode: this.mode._type })
         switch (this.mode._type) {
             case 'shot':
                 await this.oneCycle()
@@ -35,7 +41,7 @@ export class Scheduler {
 
     private async oneCycle() {
         for (const task of this.tasks) {
-            logger.info(`start ${task.name}`, { task_name: task.name })
+            this.logger.info(`start ${task.name}`, { task_name: task.name })
             try {
                 const input = {
                     key: task.name,
@@ -43,6 +49,7 @@ export class Scheduler {
                 }
 
                 if (!await this.timing.allow(input)) {
+                    this.logger.info(`skip ${task.name}`, { task_name: task.name })
                     continue
                 }
 
@@ -51,7 +58,7 @@ export class Scheduler {
                     ...input,
                     constraint: task.constraint
                 })
-                logger.info(`end ${task.name}`, { task_name: task.name })
+                this.logger.info(`end ${task.name}`, { task_name: task.name })
             } catch (e) {
                 //
             }
@@ -83,27 +90,27 @@ export class Scheduler {
             while (running) {
                 // スタート時刻を計測
                 const startTime = Date.now()
-                logger.debug("start oneCycle")
+                this.logger.debug("start oneCycle")
 
                 await this.oneCycle()
 
                 const endTime = Date.now()
-                logger.debug("end oneCycle")
+                this.logger.debug("end oneCycle")
                 const elapsedTime = endTime - startTime // 処理にかかった時間を計測
 
                 // 残り時間の計算
                 const remainingSleepTime = totalSleepMs - elapsedTime
 
                 if (remainingSleepTime > 0 && running) {
-                    logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1000, sleep_time_m: remainingSleepTime / (1000 * 60) })
+                    this.logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1000, sleep_time_m: remainingSleepTime / (1000 * 60) })
                     await setTimeout(remainingSleepTime, null, { signal: controller.signal }) // 残り時間をスリープ
                 }
             }
         } catch (e) {
             if (e instanceof Error && e.name === "AbortError") {
-                logger.info("", e)
+                this.logger.info("", e)
                 // 正常なのでスルー
-                logger.debug("stopping")
+                this.logger.debug("stopping")
             } else {
                 throw e
             }

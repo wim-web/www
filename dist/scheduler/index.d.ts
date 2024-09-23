@@ -1,4 +1,5 @@
 import { T as Timing, a as TimeConstraint } from '../contract-DdJfrOyN.js';
+import { Logger } from 'winston';
 
 type Mode = (ShotMode | LoopMode) & {
     _type: string;
@@ -17,7 +18,8 @@ declare class Scheduler {
     private readonly mode;
     private readonly timing;
     private readonly tasks;
-    constructor(mode: Mode, timing: Timing, tasks: Task[]);
+    private readonly logger;
+    constructor(mode: Mode, timing: Timing, tasks: Task[], logger?: Logger);
     run(): Promise<void>;
     private oneCycle;
     private loop;

@@ -20,33 +20,40 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
-  enableLog: () => enableLog
+  defaultLogger: () => defaultLogger,
+  noneLogger: () => noneLogger
 });
 module.exports = __toCommonJS(src_exports);
 
 // src/log.ts
 var import_winston = require("winston");
-var logger = (0, import_winston.createLogger)({
-  transports: [
-    new import_winston.transports.Console({
-      silent: true
-    })
-  ]
-});
-var enableLog = (level) => {
-  logger.level = level;
-  logger.configure({
+var noneLogger = () => {
+  return (0, import_winston.createLogger)({
+    transports: [
+      new import_winston.transports.Console({
+        silent: true
+      })
+    ]
+  });
+};
+var defaultLogger = (level) => {
+  return (0, import_winston.createLogger)({
+    level,
     format: import_winston.format.combine(
       import_winston.format.timestamp(),
       import_winston.format.json()
     ),
     transports: [
-      new import_winston.transports.Console()
+      new import_winston.transports.Console({
+        silent: false
+        // ログ出力を有効化
+      })
     ]
   });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  enableLog
+  defaultLogger,
+  noneLogger
 });
 //# sourceMappingURL=index.cjs.map

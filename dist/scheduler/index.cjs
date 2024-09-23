@@ -26,13 +26,15 @@ module.exports = __toCommonJS(scheduler_exports);
 
 // src/log.ts
 var import_winston = require("winston");
-var logger = (0, import_winston.createLogger)({
-  transports: [
-    new import_winston.transports.Console({
-      silent: true
-    })
-  ]
-});
+var noneLogger = () => {
+  return (0, import_winston.createLogger)({
+    transports: [
+      new import_winston.transports.Console({
+        silent: true
+      })
+    ]
+  });
+};
 
 // src/util/function.ts
 function calculateMilliseconds({
@@ -56,13 +58,15 @@ function calculateMilliseconds({
 // src/scheduler/index.ts
 var import_promises = require("timers/promises");
 var Scheduler = class {
-  constructor(mode, timing, tasks) {
+  constructor(mode, timing, tasks, logger) {
     this.mode = mode;
     this.timing = timing;
     this.tasks = tasks;
+    this.logger = logger || noneLogger();
   }
+  logger;
   async run() {
-    logger.debug(`run`, { mode: this.mode._type });
+    this.logger.debug(`run`, { mode: this.mode._type });
     switch (this.mode._type) {
       case "shot":
         await this.oneCycle();
@@ -74,13 +78,14 @@ var Scheduler = class {
   }
   async oneCycle() {
     for (const task of this.tasks) {
-      logger.info(`start ${task.name}`, { task_name: task.name });
+      this.logger.info(`start ${task.name}`, { task_name: task.name });
       try {
         const input = {
           key: task.name,
           date: /* @__PURE__ */ new Date()
         };
         if (!await this.timing.allow(input)) {
+          this.logger.info(`skip ${task.name}`, { task_name: task.name });
           continue;
         }
         await task.fn();
@@ -88,7 +93,7 @@ var Scheduler = class {
           ...input,
           constraint: task.constraint
         });
-        logger.info(`end ${task.name}`, { task_name: task.name });
+        this.logger.info(`end ${task.name}`, { task_name: task.name });
       } catch (e) {
       }
     }
@@ -113,21 +118,21 @@ var Scheduler = class {
     try {
       while (running) {
         const startTime = Date.now();
-        logger.debug("start oneCycle");
+        this.logger.debug("start oneCycle");
         await this.oneCycle();
         const endTime = Date.now();
-        logger.debug("end oneCycle");
+        this.logger.debug("end oneCycle");
         const elapsedTime = endTime - startTime;
         const remainingSleepTime = totalSleepMs - elapsedTime;
         if (remainingSleepTime > 0 && running) {
-          logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1e3, sleep_time_m: remainingSleepTime / (1e3 * 60) });
+          this.logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1e3, sleep_time_m: remainingSleepTime / (1e3 * 60) });
           await (0, import_promises.setTimeout)(remainingSleepTime, null, { signal: controller.signal });
         }
       }
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
-        logger.info("", e);
-        logger.debug("stopping");
+        this.logger.info("", e);
+        this.logger.debug("stopping");
       } else {
         throw e;
       }
