@@ -9,8 +9,8 @@ export let logger = createLogger({
 })
 
 export const enableLog = (level: string) => {
-    logger = createLogger({
-        level,
+    logger.level = level;
+    logger.configure({
         format: format.combine(
             format.timestamp(),
             format.json(),
@@ -18,5 +18,5 @@ export const enableLog = (level: string) => {
         transports: [
             new transports.Console()
         ]
-    })
+    });
 }
