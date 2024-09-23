@@ -8,8 +8,8 @@ var logger = createLogger({
   ]
 });
 var enableLog = (level) => {
-  logger = createLogger({
-    level,
+  logger.level = level;
+  logger.configure({
     format: format.combine(
       format.timestamp(),
       format.json()

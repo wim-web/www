@@ -34,8 +34,8 @@ var logger = (0, import_winston.createLogger)({
   ]
 });
 var enableLog = (level) => {
-  logger = (0, import_winston.createLogger)({
-    level,
+  logger.level = level;
+  logger.configure({
     format: import_winston.format.combine(
       import_winston.format.timestamp(),
       import_winston.format.json()
