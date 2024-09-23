@@ -3,13 +3,13 @@ import { TimeConstraint, Timing } from "@/timing/contract"
 import { calculateMilliseconds } from "@/util/function"
 import { setTimeout } from "timers/promises"
 
-type Mode = (ShotMode | LoopMode) & { _type: string }
+export type Mode = (ShotMode | LoopMode) & { _type: string }
 
-type ShotMode = {
+export type ShotMode = {
     _type: "shot"
 }
 
-type LoopMode = {
+export type LoopMode = {
     _type: "loop"
     oneCycleTime: { h: number, m: number }
 }
@@ -111,7 +111,7 @@ export class Scheduler {
     }
 }
 
-type Task = {
+export type Task = {
     name: string,
     constraint: TimeConstraint,
     fn: () => Promise<void>

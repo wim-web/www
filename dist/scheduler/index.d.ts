@@ -28,4 +28,4 @@ type Task = {
     fn: () => Promise<void>;
 };
 
-export { Scheduler };
+export { type LoopMode, type Mode, Scheduler, type ShotMode, type Task };

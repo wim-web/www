@@ -1,7 +1,7 @@
 import { TimeConstraint, Timing } from "@/timing/contract";
 import { Redis } from "ioredis";
 
-type RedisTimingInput = {
+export type RedisTimingInput = {
     host: string, port: number, keyPrefix?: string
 }
 

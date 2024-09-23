@@ -59,4 +59,4 @@ declare class Daily implements TimeConstraint {
     next(date: Date): Date;
 }
 
-export { Daily, FileTiming, Rate, RedisTiming, TimeConstraint, Timing, withRedisTiming };
+export { Daily, FileTiming, Rate, RedisTiming, type RedisTimingInput, TimeConstraint, Timing, withRedisTiming };
