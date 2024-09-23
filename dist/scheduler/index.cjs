@@ -1,8 +1,34 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/scheduler/index.ts
+var scheduler_exports = {};
+__export(scheduler_exports, {
+  Scheduler: () => Scheduler
+});
+module.exports = __toCommonJS(scheduler_exports);
+
 // src/log.ts
-import { createLogger, format, transports } from "winston";
-var logger = createLogger({
+var import_winston = require("winston");
+var logger = (0, import_winston.createLogger)({
   transports: [
-    new transports.Console({
+    new import_winston.transports.Console({
       silent: true
     })
   ]
@@ -28,7 +54,7 @@ function calculateMilliseconds({
 }
 
 // src/scheduler/index.ts
-import { setTimeout } from "timers/promises";
+var import_promises = require("timers/promises");
 var Scheduler = class {
   constructor(mode, timing, tasks) {
     this.mode = mode;
@@ -95,7 +121,7 @@ var Scheduler = class {
         const remainingSleepTime = totalSleepMs - elapsedTime;
         if (remainingSleepTime > 0 && running) {
           logger.debug("sleep", { sleep_time_ms: remainingSleepTime, sleep_time_s: remainingSleepTime / 1e3, sleep_time_m: remainingSleepTime / (1e3 * 60) });
-          await setTimeout(remainingSleepTime, null, { signal: controller.signal });
+          await (0, import_promises.setTimeout)(remainingSleepTime, null, { signal: controller.signal });
         }
       }
     } catch (e) {
@@ -108,7 +134,8 @@ var Scheduler = class {
     }
   }
 };
-export {
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
   Scheduler
-};
-//# sourceMappingURL=index.js.map
+});
+//# sourceMappingURL=index.cjs.map

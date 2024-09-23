@@ -1,0 +1,1 @@
+export { enableLog } from './log';

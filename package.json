@@ -1,18 +1,28 @@
 {
   "name": "www",
   "version": "1.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "test": "TZ=UTC vitest"
   },
+  "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./scheduler": {
+      "import": "./dist/scheduler/index.js",
+      "require": "./dist/scheduler/index.cjs",
+      "types": "./dist/scheduler/index.d.ts"
+    },
+    "./timing": {
+      "import": "./dist/timing/index.js",
+      "require": "./dist/timing/index.cjs",
+      "types": "./dist/timing/index.d.ts"
     }
   },
   "keywords": [],
@@ -21,6 +31,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^22.5.5",
+    "tsup": "^8.3.0",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2",
     "vitest": "^2.1.1"

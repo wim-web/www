@@ -1,4 +1,4 @@
-export interface Timing {
+interface Timing {
     allow: (input: {
         key: string;
         date: Date;
@@ -9,7 +9,8 @@ export interface Timing {
         date: Date;
     }) => Promise<void>;
 }
-export interface TimeConstraint {
+interface TimeConstraint {
     next(date: Date): Date;
 }
-//# sourceMappingURL=contract.d.ts.map
+
+export type { Timing as T, TimeConstraint as a };
