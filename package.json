@@ -23,6 +23,11 @@
       "import": "./dist/timing/index.js",
       "require": "./dist/timing/index.cjs",
       "types": "./dist/timing/index.d.ts"
+    },
+    "./eth": {
+      "import": "./dist/eth/index.js",
+      "require": "./dist/eth/index.cjs",
+      "types": "./dist/eth/index.d.ts"
     }
   },
   "files": [
