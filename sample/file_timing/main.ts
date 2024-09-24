@@ -4,24 +4,26 @@ import {
     Rate
 } from '../../src/timing/concrete/constraint'
 import { defaultLogger } from '../../dist'
+import { withTiming } from '../../src/timing'
 
 
 async function main() {
-    const timing = new FileTiming("./json.json")
+    const file = new FileTiming("./json.json")
 
-    const s = new Scheduler(
-        { _type: 'shot' },
-        timing,
-        [{
-            name: "simple",
-            constraint: new Rate({ m: 1 }),
-            fn: async () => { console.log("simple") }
-        }],
-        defaultLogger("debug")
-    )
+    await withTiming(file, async (timing) => {
+        const s = new Scheduler(
+            { _type: 'shot' },
+            timing,
+            [{
+                name: "simple",
+                constraint: new Rate({ m: 1 }),
+                fn: async () => { console.log("simple") }
+            }],
+            defaultLogger("debug")
+        )
 
-
-    await s.run()
+        await s.run()
+    })
 }
 
 

@@ -1,4 +1,4 @@
-import { T as Timing, a as TimeConstraint } from '../contract-DdJfrOyN.cjs';
+import { T as Timing, a as TimeConstraint } from '../contract-CEG6ex6Z.cjs';
 import { Logger } from 'winston';
 
 declare class FileTiming implements Timing {
@@ -16,6 +16,7 @@ declare class FileTiming implements Timing {
         constraint: TimeConstraint;
         date: Date;
     }): Promise<void>;
+    terminate(): Promise<void>;
 }
 
 type RedisTimingInput = {
@@ -24,7 +25,6 @@ type RedisTimingInput = {
     keyPrefix?: string;
     logger?: Logger;
 };
-declare const withRedisTiming: (input: RedisTimingInput, f: (timing: RedisTiming) => Promise<void>) => Promise<void>;
 declare class RedisTiming implements Timing {
     private readonly client;
     private constructor();
@@ -65,4 +65,6 @@ declare class Daily implements TimeConstraint {
     next(date: Date): Date;
 }
 
-export { Daily, FileTiming, Immediate, Rate, RedisTiming, type RedisTimingInput, TimeConstraint, Timing, withRedisTiming };
+declare const withTiming: (timing: Timing, f: (timing: Timing) => Promise<void>) => Promise<void>;
+
+export { Daily, FileTiming, Immediate, Rate, RedisTiming, type RedisTimingInput, TimeConstraint, Timing, withTiming };

@@ -6,17 +6,6 @@ import { Logger } from "winston";
 export type RedisTimingInput = {
     host: string, port: number, keyPrefix?: string, logger?: Logger
 }
-
-export const withRedisTiming = async (input: RedisTimingInput, f: (timing: RedisTiming) => Promise<void>) => {
-    const timing = await RedisTiming.init(input)
-
-    try {
-        await f(timing)
-    } finally {
-        await timing.terminate()
-    }
-}
-
 export class RedisTiming implements Timing {
     private constructor(private readonly client: Redis) { }
 

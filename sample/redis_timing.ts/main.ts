@@ -1,17 +1,16 @@
 import { Scheduler } from '../../src/scheduler/index'
-import { withRedisTiming } from '../../src/timing/concrete/redis'
+import { RedisTiming, withTiming } from '../../src/timing'
 import {
     Rate
 } from '../../src/timing/concrete/constraint'
 import { defaultLogger } from '../../dist'
-import { setTimeout } from 'timers/promises'
-
 
 async function main() {
-    await withRedisTiming({
+    const redis = RedisTiming.init({
         host: "localhost", port: 6666, keyPrefix: "test", logger: defaultLogger("debug")
-    }, async (timing) => {
+    })
 
+    await withTiming(redis, async (timing) => {
         const s = new Scheduler(
             { _type: 'loop', oneCycleTime: { h: 0, m: 2 } },
             timing,

@@ -8,6 +8,7 @@ export interface Timing {
         constraint: TimeConstraint,
         date: Date,
     }) => Promise<void>;
+    terminate: () => Promise<void>
 }
 
 export interface TimeConstraint {

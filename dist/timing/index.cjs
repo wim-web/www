@@ -35,7 +35,7 @@ __export(timing_exports, {
   Immediate: () => Immediate,
   Rate: () => Rate,
   RedisTiming: () => RedisTiming,
-  withRedisTiming: () => withRedisTiming
+  withTiming: () => withTiming
 });
 module.exports = __toCommonJS(timing_exports);
 
@@ -80,19 +80,13 @@ var FileTiming = class {
     this.locker[key] = constraint.next(date).toISOString();
     this.flush();
   }
+  async terminate() {
+  }
 };
 
 // src/timing/concrete/redis.ts
 var import_ioredis = require("ioredis");
 var import_promises = require("timers/promises");
-var withRedisTiming = async (input, f) => {
-  const timing = await RedisTiming.init(input);
-  try {
-    await f(timing);
-  } finally {
-    await timing.terminate();
-  }
-};
 var RedisTiming = class _RedisTiming {
   constructor(client) {
     this.client = client;
@@ -185,6 +179,15 @@ var Daily = class {
     })();
   }
 };
+
+// src/timing/index.ts
+var withTiming = async (timing, f) => {
+  try {
+    await f(timing);
+  } finally {
+    await timing.terminate();
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Daily,
@@ -192,6 +195,6 @@ var Daily = class {
   Immediate,
   Rate,
   RedisTiming,
-  withRedisTiming
+  withTiming
 });
 //# sourceMappingURL=index.cjs.map

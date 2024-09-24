@@ -62,5 +62,7 @@ export class FileTiming implements Timing {
         this.locker[key] = constraint.next(date).toISOString()
         this.flush()
     }
+
+    async terminate() { }
 }
 

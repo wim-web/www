@@ -8,6 +8,7 @@ interface Timing {
         constraint: TimeConstraint;
         date: Date;
     }) => Promise<void>;
+    terminate: () => Promise<void>;
 }
 interface TimeConstraint {
     next(date: Date): Date;
