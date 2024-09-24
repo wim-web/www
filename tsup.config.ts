@@ -5,6 +5,7 @@ export default defineConfig({
         "src/index.ts",
         "src/timing/index.ts",
         "src/scheduler/index.ts",
+        "src/eth/index.ts"
     ],
     format: ["cjs", "esm"],
     splitting: false,
