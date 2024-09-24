@@ -25,6 +25,9 @@
       "types": "./dist/timing/index.d.ts"
     }
   },
+  "files": [
+    "/dist/**"
+  ],
   "keywords": [],
   "author": "",
   "license": "MIT",
