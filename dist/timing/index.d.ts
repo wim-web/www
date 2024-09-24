@@ -42,6 +42,9 @@ type AtLeastOne<T, U = {
     [K in keyof T]: Pick<T, K>;
 }> = Partial<T> & U[keyof U];
 
+declare class Immediate implements TimeConstraint {
+    next(date: Date): Date;
+}
 declare class Rate implements TimeConstraint {
     private readonly param;
     constructor(param: AtLeastOne<{
@@ -59,4 +62,4 @@ declare class Daily implements TimeConstraint {
     next(date: Date): Date;
 }
 
-export { Daily, FileTiming, Rate, RedisTiming, type RedisTimingInput, TimeConstraint, Timing, withRedisTiming };
+export { Daily, FileTiming, Immediate, Rate, RedisTiming, type RedisTimingInput, TimeConstraint, Timing, withRedisTiming };

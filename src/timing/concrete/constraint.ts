@@ -2,6 +2,12 @@
 import { TimeConstraint } from "@/timing/contract"
 import { AtLeastOne } from "@/util/types"
 
+export class Immediate implements TimeConstraint {
+    next(date: Date): Date {
+        return date
+    }
+}
+
 export class Rate implements TimeConstraint {
     constructor(private readonly param: AtLeastOne<{
         h: number,

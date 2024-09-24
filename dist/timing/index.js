@@ -84,6 +84,11 @@ var RedisTiming = class {
 };
 
 // src/timing/concrete/constraint.ts
+var Immediate = class {
+  next(date) {
+    return date;
+  }
+};
 var Rate = class {
   constructor(param) {
     this.param = param;
@@ -112,6 +117,7 @@ var Daily = class {
 export {
   Daily,
   FileTiming,
+  Immediate,
   Rate,
   RedisTiming,
   withRedisTiming

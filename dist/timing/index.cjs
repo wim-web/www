@@ -32,6 +32,7 @@ var timing_exports = {};
 __export(timing_exports, {
   Daily: () => Daily,
   FileTiming: () => FileTiming,
+  Immediate: () => Immediate,
   Rate: () => Rate,
   RedisTiming: () => RedisTiming,
   withRedisTiming: () => withRedisTiming
@@ -124,6 +125,11 @@ var RedisTiming = class {
 };
 
 // src/timing/concrete/constraint.ts
+var Immediate = class {
+  next(date) {
+    return date;
+  }
+};
 var Rate = class {
   constructor(param) {
     this.param = param;
@@ -153,6 +159,7 @@ var Daily = class {
 0 && (module.exports = {
   Daily,
   FileTiming,
+  Immediate,
   Rate,
   RedisTiming,
   withRedisTiming
