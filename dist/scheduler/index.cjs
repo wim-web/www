@@ -69,14 +69,13 @@ var Scheduler = class {
     this.logger.debug(`run`, { mode: this.mode._type });
     switch (this.mode._type) {
       case "shot":
-        await this.oneCycle();
-        break;
+        return await this.oneCycle();
       case "loop":
-        await this.loop(this.mode.oneCycleTime);
-        break;
+        return await this.loop(this.mode.oneCycleTime);
     }
   }
   async oneCycle() {
+    let isError = false;
     for (const task of this.tasks) {
       this.logger.info(`start ${task.name}`, { task_name: task.name });
       try {
@@ -95,9 +94,13 @@ var Scheduler = class {
         });
         this.logger.info(`end ${task.name}`, { task_name: task.name });
       } catch (e) {
+        isError = true;
+        this.logger.error("", e);
       }
     }
+    return isError;
   }
+  // 最後のサイクルのみの結果を返す
   async loop(oneCycleTime) {
     const totalSleepMs = calculateMilliseconds(oneCycleTime);
     let running = true;
@@ -115,11 +118,12 @@ var Scheduler = class {
     process.on("SIGQUIT", () => {
       signalHandle();
     });
+    let isError = false;
     try {
       while (running) {
         const startTime = Date.now();
         this.logger.debug("start oneCycle");
-        await this.oneCycle();
+        isError = await this.oneCycle();
         const endTime = Date.now();
         this.logger.debug("end oneCycle");
         const elapsedTime = endTime - startTime;
@@ -131,12 +135,14 @@ var Scheduler = class {
       }
     } catch (e) {
       if (e instanceof Error && e.name === "AbortError") {
-        this.logger.info("", e);
         this.logger.debug("stopping");
       } else {
+        this.logger.error("", e);
+        isError = true;
         throw e;
       }
     }
+    return isError;
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

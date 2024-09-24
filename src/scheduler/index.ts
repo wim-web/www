@@ -27,19 +27,19 @@ export class Scheduler {
         this.logger = logger || noneLogger()
     }
 
-    async run() {
+    async run(): Promise<boolean> {
         this.logger.debug(`run`, { mode: this.mode._type })
         switch (this.mode._type) {
             case 'shot':
-                await this.oneCycle()
-                break
+                return await this.oneCycle()
             case 'loop':
-                await this.loop(this.mode.oneCycleTime)
-                break
+                return await this.loop(this.mode.oneCycleTime)
         }
     }
 
-    private async oneCycle() {
+    private async oneCycle(): Promise<boolean> {
+        let isError = false
+
         for (const task of this.tasks) {
             this.logger.info(`start ${task.name}`, { task_name: task.name })
             try {
@@ -60,12 +60,16 @@ export class Scheduler {
                 })
                 this.logger.info(`end ${task.name}`, { task_name: task.name })
             } catch (e) {
-                //
+                isError = true
+                this.logger.error("", e)
             }
         }
+
+        return isError
     }
 
-    private async loop(oneCycleTime: { h: number, m: number }) {
+    // 最後のサイクルのみの結果を返す
+    private async loop(oneCycleTime: { h: number, m: number }): Promise<boolean> {
         // ループの最低時間
         const totalSleepMs = calculateMilliseconds(oneCycleTime);
         let running = true
@@ -86,13 +90,15 @@ export class Scheduler {
             signalHandle()
         });
 
+        let isError = false
+
         try {
             while (running) {
                 // スタート時刻を計測
                 const startTime = Date.now()
                 this.logger.debug("start oneCycle")
 
-                await this.oneCycle()
+                isError = await this.oneCycle()
 
                 const endTime = Date.now()
                 this.logger.debug("end oneCycle")
@@ -108,13 +114,16 @@ export class Scheduler {
             }
         } catch (e) {
             if (e instanceof Error && e.name === "AbortError") {
-                this.logger.info("", e)
                 // 正常なのでスルー
                 this.logger.debug("stopping")
             } else {
+                this.logger.error("", e)
+                isError = true
                 throw e
             }
         }
+
+        return isError
     }
 }
 

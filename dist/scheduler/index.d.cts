@@ -20,7 +20,7 @@ declare class Scheduler {
     private readonly tasks;
     private readonly logger;
     constructor(mode: Mode, timing: Timing, tasks: Task[], logger?: Logger);
-    run(): Promise<void>;
+    run(): Promise<boolean>;
     private oneCycle;
     private loop;
 }
