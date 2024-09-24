@@ -4,11 +4,12 @@ import {
     Rate
 } from '../../src/timing/concrete/constraint'
 import { defaultLogger } from '../../dist'
+import { setTimeout } from 'timers/promises'
 
 
 async function main() {
     await withRedisTiming({
-        host: "localhost", port: 6666, keyPrefix: "test"
+        host: "localhost", port: 6666, keyPrefix: "test", logger: defaultLogger("debug")
     }, async (timing) => {
 
         const s = new Scheduler(
@@ -21,7 +22,6 @@ async function main() {
             }],
             defaultLogger("debug")
         )
-
 
         await s.run()
     })

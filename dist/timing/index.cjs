@@ -84,22 +84,52 @@ var FileTiming = class {
 
 // src/timing/concrete/redis.ts
 var import_ioredis = require("ioredis");
+var import_promises = require("timers/promises");
 var withRedisTiming = async (input, f) => {
-  const timing = new RedisTiming(input);
+  const timing = await RedisTiming.init(input);
   try {
     await f(timing);
   } finally {
     await timing.terminate();
   }
 };
-var RedisTiming = class {
-  client;
-  constructor({ host, port, keyPrefix }) {
-    this.client = new import_ioredis.Redis({
+var RedisTiming = class _RedisTiming {
+  constructor(client) {
+    this.client = client;
+  }
+  static async init({ host, port, keyPrefix, logger }) {
+    const client = new import_ioredis.Redis({
       host,
       port,
-      keyPrefix
+      keyPrefix,
+      retryStrategy(times2) {
+        const delay = Math.min(times2 * 50, 2e3);
+        return delay;
+      },
+      lazyConnect: true
     });
+    client.on("error", (err) => {
+      logger !== void 0 ? logger.error("Redis connection error:", err) : console.error("Redis connection error:", err);
+    });
+    const maxRetry = 5;
+    let times = 1;
+    let connected = false;
+    while (times <= maxRetry && !connected) {
+      try {
+        await client.connect();
+        connected = true;
+      } catch (e) {
+        console.log(`error ${times}`);
+        const delay = Math.min(times * 50, 2e3);
+        await (0, import_promises.setTimeout)(delay);
+        times++;
+      }
+    }
+    if (!connected) {
+      await client.disconnect(false);
+      throw new Error("Failed to connect to Redis");
+    }
+    return new _RedisTiming(client);
   }
   async allow({
     key,

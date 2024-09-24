@@ -1,4 +1,5 @@
 import { T as Timing, a as TimeConstraint } from '../contract-DdJfrOyN.cjs';
+import { Logger } from 'winston';
 
 declare class FileTiming implements Timing {
     private readonly filepath;
@@ -21,11 +22,13 @@ type RedisTimingInput = {
     host: string;
     port: number;
     keyPrefix?: string;
+    logger?: Logger;
 };
 declare const withRedisTiming: (input: RedisTimingInput, f: (timing: RedisTiming) => Promise<void>) => Promise<void>;
 declare class RedisTiming implements Timing {
-    private client;
-    constructor({ host, port, keyPrefix }: RedisTimingInput);
+    private readonly client;
+    private constructor();
+    static init({ host, port, keyPrefix, logger }: RedisTimingInput): Promise<RedisTiming>;
     allow({ key, date, }: {
         key: string;
         date: Date;
