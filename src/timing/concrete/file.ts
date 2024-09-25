@@ -66,7 +66,9 @@ export class FileTiming implements Timing {
     async terminate() { }
 
     async list() {
-        return this.locker
+        return this.locker as {
+            [key: string]: string
+        }
     }
 }
 

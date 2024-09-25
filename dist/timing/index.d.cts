@@ -1,9 +1,6 @@
 import { T as Timing, a as TimeConstraint } from '../contract-B0_abbDi.cjs';
 import { Logger } from 'winston';
 
-type Locker = {
-    [key: string]: string;
-};
 declare class FileTiming implements Timing {
     private readonly filepath;
     private locker;
@@ -20,7 +17,9 @@ declare class FileTiming implements Timing {
         date: Date;
     }): Promise<void>;
     terminate(): Promise<void>;
-    list(): Promise<Locker>;
+    list(): Promise<{
+        [key: string]: string;
+    }>;
 }
 
 type RedisTimingInput = {
