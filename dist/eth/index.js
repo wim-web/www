@@ -35,7 +35,13 @@ function prettyData(data) {
     parameters
   };
 }
+function extractTransactionReceipt(receipt) {
+  return {
+    transactionHash: receipt.transactionHash
+  };
+}
 export {
+  extractTransactionReceipt,
   getPriorityFee,
   prettyData,
   sendTx

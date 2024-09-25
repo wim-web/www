@@ -1,3 +1,5 @@
+import { TransactionReceipt } from "web3"
+
 export type PrettyData = {
     method: string
     parameters: string[]
@@ -19,5 +21,11 @@ export function prettyData(data: string): PrettyData {
     return {
         method,
         parameters
+    }
+}
+
+export function extractTransactionReceipt(receipt: TransactionReceipt) {
+    return {
+        transactionHash: receipt.transactionHash
     }
 }

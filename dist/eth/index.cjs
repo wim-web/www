@@ -20,6 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/eth/index.ts
 var eth_exports = {};
 __export(eth_exports, {
+  extractTransactionReceipt: () => extractTransactionReceipt,
   getPriorityFee: () => getPriorityFee,
   prettyData: () => prettyData,
   sendTx: () => sendTx
@@ -63,8 +64,14 @@ function prettyData(data) {
     parameters
   };
 }
+function extractTransactionReceipt(receipt) {
+  return {
+    transactionHash: receipt.transactionHash
+  };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  extractTransactionReceipt,
   getPriorityFee,
   prettyData,
   sendTx
