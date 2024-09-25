@@ -9,6 +9,9 @@ interface Timing {
         date: Date;
     }) => Promise<void>;
     terminate: () => Promise<void>;
+    list: () => Promise<{
+        [key: string]: string;
+    }>;
 }
 interface TimeConstraint {
     next(date: Date): Date;

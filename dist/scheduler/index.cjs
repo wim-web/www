@@ -144,6 +144,9 @@ var Scheduler = class {
     }
     return isError;
   }
+  async list() {
+    return await this.timing.list();
+  }
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

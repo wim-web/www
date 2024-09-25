@@ -41,6 +41,9 @@ var FileTiming = class {
   }
   async terminate() {
   }
+  async list() {
+    return this.locker;
+  }
 };
 
 // src/timing/concrete/redis.ts
@@ -104,6 +107,23 @@ var RedisTiming = class _RedisTiming {
   }
   async terminate() {
     await this.client.quit();
+  }
+  async list() {
+    const result = {};
+    const keys = await this.client.keys("*");
+    const prefix = this.client.options.keyPrefix || "";
+    for (const fullKey of keys) {
+      const key = fullKey.replace(prefix, "");
+      const ttl = await this.client.ttl(key);
+      if (ttl > 0) {
+        const expirationTimestamp = Date.now() + ttl * 1e3;
+        const expirationDate = new Date(expirationTimestamp);
+        result[key] = expirationDate.toISOString();
+      } else {
+        result[key] = "No TTL";
+      }
+    }
+    return result;
   }
 };
 

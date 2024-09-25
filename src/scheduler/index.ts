@@ -125,6 +125,12 @@ export class Scheduler {
 
         return isError
     }
+
+    async list(): Promise<{
+        [key: string]: string
+    }> {
+        return await this.timing.list()
+    }
 }
 
 export type Task = {

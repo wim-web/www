@@ -1,4 +1,4 @@
-import { T as Timing, a as TimeConstraint } from '../contract-CEG6ex6Z.cjs';
+import { T as Timing, a as TimeConstraint } from '../contract-B0_abbDi.cjs';
 import { Logger } from 'winston';
 
 type Mode = (ShotMode | LoopMode) & {
@@ -23,6 +23,9 @@ declare class Scheduler {
     run(): Promise<boolean>;
     private oneCycle;
     private loop;
+    list(): Promise<{
+        [key: string]: string;
+    }>;
 }
 type Task = {
     name: string;

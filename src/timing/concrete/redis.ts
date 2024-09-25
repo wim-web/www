@@ -79,4 +79,24 @@ export class RedisTiming implements Timing {
     async terminate() {
         await this.client.quit()
     }
+
+    async list() {
+        const result: { [key: string]: string } = {};
+        const keys = await this.client.keys('*'); // Redisに保存されている全てのキーを取得
+        const prefix = this.client.options.keyPrefix || ''; // keyPrefixを取得
+
+        for (const fullKey of keys) {
+            const key = fullKey.replace(prefix, ''); // keyPrefixを取り除いたキー
+            const ttl = await this.client.ttl(key); // フルキーでTTLを取得
+            if (ttl > 0) {
+                const expirationTimestamp = Date.now() + ttl * 1000; // 現在時刻にTTLを加えてミリ秒に変換
+                const expirationDate = new Date(expirationTimestamp); // Dateオブジェクトに変換
+                result[key] = expirationDate.toISOString(); // ISO 8601形式の文字列で返す
+            } else {
+                result[key] = 'No TTL'; // TTLが設定されていないキーはその旨を記載
+            }
+        }
+
+        return result;
+    }
 }
