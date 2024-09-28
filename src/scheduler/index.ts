@@ -19,7 +19,7 @@ export type LoopMode = {
 
 type Filter<T extends string = string> = {
     filtered: boolean,
-    items: T[]
+    items: Readonly<T[]>
 }
 
 export class Scheduler<T extends string = string> {
@@ -34,7 +34,7 @@ export class Scheduler<T extends string = string> {
         this.logger = logger || noneLogger()
     }
 
-    async run(filterItems: T[] = []): Promise<boolean> {
+    async run(filterItems: Readonly<T[]> = []): Promise<boolean> {
         this.logger.debug(`run`, { mode: this.mode._type })
 
         const filter: Filter<T> = filterItems.length === 0 ? { filtered: false, items: [] } : { filtered: true, items: filterItems }

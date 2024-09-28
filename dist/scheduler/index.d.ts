@@ -20,7 +20,7 @@ declare class Scheduler<T extends string = string> {
     private readonly tasks;
     private readonly logger;
     constructor(mode: Mode, timing: Timing, tasks: Tasks<T>, logger?: Logger);
-    run(filterItems?: T[]): Promise<boolean>;
+    run(filterItems?: Readonly<T[]>): Promise<boolean>;
     private oneCycle;
     private loop;
     list(): Promise<{
