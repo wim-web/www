@@ -1,7 +1,9 @@
 import { noneLogger } from "@/log"
+import { Immediate } from "@/timing"
 import { TimeConstraint, Timing } from "@/timing/contract"
 import { calculateMilliseconds } from "@/util/function"
 import { setTimeout } from "timers/promises"
+import { a0 } from "vitest/dist/chunks/reporters.WnPwkmgA.js"
 import { Logger } from "winston"
 
 export type Mode = (ShotMode | LoopMode) & { _type: string }
@@ -15,32 +17,36 @@ export type LoopMode = {
     oneCycleTime: { h: number, m: number }
 }
 
-export class Scheduler {
+export class Scheduler<T extends string = string> {
     private readonly logger: Logger
 
     constructor(
         private readonly mode: Mode,
         private readonly timing: Timing,
-        private readonly tasks: Task[],
+        private readonly tasks: Tasks<T>,
         logger?: Logger,
     ) {
         this.logger = logger || noneLogger()
     }
 
-    async run(): Promise<boolean> {
+    async run(filtered: T[] = []): Promise<boolean> {
         this.logger.debug(`run`, { mode: this.mode._type })
         switch (this.mode._type) {
             case 'shot':
-                return await this.oneCycle()
+                return await this.oneCycle(filtered)
             case 'loop':
-                return await this.loop(this.mode.oneCycleTime)
+                return await this.loop(this.mode.oneCycleTime, filtered)
         }
     }
 
-    private async oneCycle(): Promise<boolean> {
+    private async oneCycle(filtered: T[] = []): Promise<boolean> {
         let isError = false
 
         for (const task of this.tasks) {
+            if (!filtered.includes(task.name)) {
+                continue
+            }
+
             this.logger.info(`start ${task.name}`, { task_name: task.name })
             try {
                 const input = {
@@ -69,7 +75,7 @@ export class Scheduler {
     }
 
     // 最後のサイクルのみの結果を返す
-    private async loop(oneCycleTime: { h: number, m: number }): Promise<boolean> {
+    private async loop(oneCycleTime: { h: number, m: number }, filtered: T[] = []): Promise<boolean> {
         // ループの最低時間
         const totalSleepMs = calculateMilliseconds(oneCycleTime);
         let running = true
@@ -98,7 +104,7 @@ export class Scheduler {
                 const startTime = Date.now()
                 this.logger.debug("start oneCycle")
 
-                isError = await this.oneCycle()
+                isError = await this.oneCycle(filtered)
 
                 const endTime = Date.now()
                 this.logger.debug("end oneCycle")
@@ -133,8 +139,10 @@ export class Scheduler {
     }
 }
 
-export type Task = {
-    name: string,
+export type Task<T extends string = string> = {
+    name: T,
     constraint: TimeConstraint,
     fn: () => Promise<void>
 }
+
+export type Tasks<T extends string = string> = Task<T>[]

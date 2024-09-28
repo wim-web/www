@@ -14,15 +14,22 @@ async function main() {
         const s = new Scheduler(
             { _type: 'shot' },
             timing,
-            [{
-                name: "simple",
-                constraint: new Rate({ m: 1 }),
-                fn: async () => { console.log("simple") }
-            }],
+            [
+                {
+                    name: "simple",
+                    constraint: new Rate({ m: 1 }),
+                    fn: async () => { console.log("simple") }
+                },
+                {
+                    name: "not",
+                    constraint: new Rate({ m: 1 }),
+                    fn: async () => { console.log("not") }
+                }
+            ],
             defaultLogger("debug")
         )
 
-        await s.run()
+        await s.run(["simple"])
     })
 }
 
