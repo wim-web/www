@@ -65,19 +65,20 @@ var Scheduler = class {
     this.logger = logger || noneLogger();
   }
   logger;
-  async run(filtered = []) {
+  async run(filterItems = []) {
     this.logger.debug(`run`, { mode: this.mode._type });
+    const filter = filterItems.length === 0 ? { filtered: false, items: [] } : { filtered: true, items: filterItems };
     switch (this.mode._type) {
       case "shot":
-        return await this.oneCycle(filtered);
+        return await this.oneCycle(filter);
       case "loop":
-        return await this.loop(this.mode.oneCycleTime, filtered);
+        return await this.loop(this.mode.oneCycleTime, filter);
     }
   }
-  async oneCycle(filtered = []) {
+  async oneCycle(filter) {
     let isError = false;
     for (const task of this.tasks) {
-      if (!filtered.includes(task.name)) {
+      if (filter.filtered && !filter.items.includes(task.name)) {
         continue;
       }
       this.logger.info(`start ${task.name}`, { task_name: task.name });
@@ -104,7 +105,7 @@ var Scheduler = class {
     return isError;
   }
   // 最後のサイクルのみの結果を返す
-  async loop(oneCycleTime, filtered = []) {
+  async loop(oneCycleTime, filter) {
     const totalSleepMs = calculateMilliseconds(oneCycleTime);
     let running = true;
     const controller = new AbortController();
@@ -126,7 +127,7 @@ var Scheduler = class {
       while (running) {
         const startTime = Date.now();
         this.logger.debug("start oneCycle");
-        isError = await this.oneCycle(filtered);
+        isError = await this.oneCycle(filter);
         const endTime = Date.now();
         this.logger.debug("end oneCycle");
         const elapsedTime = endTime - startTime;

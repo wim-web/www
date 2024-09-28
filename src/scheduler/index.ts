@@ -17,6 +17,11 @@ export type LoopMode = {
     oneCycleTime: { h: number, m: number }
 }
 
+type Filter<T extends string = string> = {
+    filtered: boolean,
+    items: T[]
+}
+
 export class Scheduler<T extends string = string> {
     private readonly logger: Logger
 
@@ -29,21 +34,24 @@ export class Scheduler<T extends string = string> {
         this.logger = logger || noneLogger()
     }
 
-    async run(filtered: T[] = []): Promise<boolean> {
+    async run(filterItems: T[] = []): Promise<boolean> {
         this.logger.debug(`run`, { mode: this.mode._type })
+
+        const filter: Filter<T> = filterItems.length === 0 ? { filtered: false, items: [] } : { filtered: true, items: filterItems }
+
         switch (this.mode._type) {
             case 'shot':
-                return await this.oneCycle(filtered)
+                return await this.oneCycle(filter)
             case 'loop':
-                return await this.loop(this.mode.oneCycleTime, filtered)
+                return await this.loop(this.mode.oneCycleTime, filter)
         }
     }
 
-    private async oneCycle(filtered: T[] = []): Promise<boolean> {
+    private async oneCycle(filter: Filter): Promise<boolean> {
         let isError = false
 
         for (const task of this.tasks) {
-            if (!filtered.includes(task.name)) {
+            if (filter.filtered && !filter.items.includes(task.name)) {
                 continue
             }
 
@@ -75,7 +83,7 @@ export class Scheduler<T extends string = string> {
     }
 
     // 最後のサイクルのみの結果を返す
-    private async loop(oneCycleTime: { h: number, m: number }, filtered: T[] = []): Promise<boolean> {
+    private async loop(oneCycleTime: { h: number, m: number }, filter: Filter): Promise<boolean> {
         // ループの最低時間
         const totalSleepMs = calculateMilliseconds(oneCycleTime);
         let running = true
@@ -104,7 +112,7 @@ export class Scheduler<T extends string = string> {
                 const startTime = Date.now()
                 this.logger.debug("start oneCycle")
 
-                isError = await this.oneCycle(filtered)
+                isError = await this.oneCycle(filter)
 
                 const endTime = Date.now()
                 this.logger.debug("end oneCycle")
