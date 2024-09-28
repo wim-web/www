@@ -14,23 +14,24 @@ type LoopMode = {
         m: number;
     };
 };
-declare class Scheduler {
+declare class Scheduler<T extends string = string> {
     private readonly mode;
     private readonly timing;
     private readonly tasks;
     private readonly logger;
-    constructor(mode: Mode, timing: Timing, tasks: Task[], logger?: Logger);
-    run(): Promise<boolean>;
+    constructor(mode: Mode, timing: Timing, tasks: Tasks<T>, logger?: Logger);
+    run(filtered?: T[]): Promise<boolean>;
     private oneCycle;
     private loop;
     list(): Promise<{
         [key: string]: string;
     }>;
 }
-type Task = {
-    name: string;
+type Task<T extends string = string> = {
+    name: T;
     constraint: TimeConstraint;
     fn: () => Promise<void>;
 };
+type Tasks<T extends string = string> = Task<T>[];
 
-export { type LoopMode, type Mode, Scheduler, type ShotMode, type Task };
+export { type LoopMode, type Mode, Scheduler, type ShotMode, type Task, type Tasks };
