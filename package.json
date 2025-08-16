@@ -28,6 +28,11 @@
       "import": "./dist/eth/index.js",
       "require": "./dist/eth/index.cjs",
       "types": "./dist/eth/index.d.ts"
+    },
+    "./util": {
+      "import": "./dist/util/index.js",
+      "require": "./dist/util/index.cjs",
+      "types": "./dist/util/index.d.ts"
     }
   },
   "files": [
