@@ -27,7 +27,6 @@ async function getPoolsByNetwork(network) {
 }
 function convert(data) {
   return data.filter((item) => item.pools.length > 0).map((item) => {
-    console.log(item.pools.length);
     const {
       ytPrice,
       impliedApy,
