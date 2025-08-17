@@ -7,6 +7,7 @@ export default defineConfig({
         "src/scheduler/index.ts",
         "src/eth/index.ts",
         "src/util/index.ts",
+        "src/spectra/index.ts",
     ],
     format: ["cjs", "esm"],
     splitting: false,
