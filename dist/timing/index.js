@@ -127,6 +127,25 @@ var RedisTiming = class _RedisTiming {
   }
 };
 
+// src/util/function.ts
+function calculateMilliseconds({
+  h,
+  m,
+  s,
+  ms
+}) {
+  const toM = (h2) => h2 * 60;
+  const toS = (m2) => m2 * 60;
+  const toMS = (s2) => s2 * 1e3;
+  return toMS(
+    toS(
+      toM(
+        h || 0
+      ) + (m || 0)
+    ) + (s || 0)
+  ) + (ms || 0);
+}
+
 // src/timing/concrete/constraint.ts
 var Immediate = class {
   next(date) {
@@ -138,10 +157,8 @@ var Rate = class {
     this.param = param;
   }
   next(date) {
-    const h_ms = (this.param.h || 0) * 60 * 60 * 1e3;
-    const m_ms = (this.param.m || 0) * 60 * 1e3;
     const timestamp = date.getTime();
-    return new Date(timestamp + h_ms + m_ms);
+    return new Date(timestamp + calculateMilliseconds(this.param));
   }
 };
 var Daily = class {

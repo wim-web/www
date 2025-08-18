@@ -59,6 +59,8 @@ declare class Rate implements TimeConstraint {
     constructor(param: AtLeastOne<{
         h: number;
         m: number;
+        s: number;
+        ms: number;
     }>);
     next(date: Date): Date;
 }

@@ -1,5 +1,6 @@
 
 import { TimeConstraint } from "@/timing/contract"
+import { calculateMilliseconds } from "@/util/function"
 import { AtLeastOne } from "@/util/types"
 
 export class Immediate implements TimeConstraint {
@@ -12,14 +13,14 @@ export class Rate implements TimeConstraint {
     constructor(private readonly param: AtLeastOne<{
         h: number,
         m: number,
+        s: number,
+        ms: number,
     }>) { }
 
     next(date: Date): Date {
-        const h_ms = (this.param.h || 0) * 60 * 60 * 1000
-        const m_ms = (this.param.m || 0) * 60 * 1000
         const timestamp = date.getTime()
 
-        return new Date(timestamp + h_ms + m_ms)
+        return new Date(timestamp + calculateMilliseconds(this.param))
     }
 }
 

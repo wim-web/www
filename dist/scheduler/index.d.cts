@@ -4,15 +4,18 @@ import { Logger } from 'winston';
 type Mode = (ShotMode | LoopMode) & {
     _type: string;
 };
+type Timer = {
+    h: number;
+    m: number;
+    s: number;
+    ms: number;
+};
 type ShotMode = {
     _type: "shot";
 };
 type LoopMode = {
     _type: "loop";
-    oneCycleTime: {
-        h: number;
-        m: number;
-    };
+    oneCycleTime: Timer;
 };
 declare class Scheduler<T extends string = string> {
     private readonly mode;

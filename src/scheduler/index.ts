@@ -8,13 +8,15 @@ import { Logger } from "winston"
 
 export type Mode = (ShotMode | LoopMode) & { _type: string }
 
+type Timer = { h: number, m: number, s: number, ms: number }
+
 export type ShotMode = {
     _type: "shot"
 }
 
 export type LoopMode = {
     _type: "loop"
-    oneCycleTime: { h: number, m: number }
+    oneCycleTime: Timer
 }
 
 type Filter<T extends string = string> = {
@@ -83,7 +85,7 @@ export class Scheduler<T extends string = string> {
     }
 
     // 最後のサイクルのみの結果を返す
-    private async loop(oneCycleTime: { h: number, m: number }, filter: Filter): Promise<boolean> {
+    private async loop(oneCycleTime: Timer, filter: Filter): Promise<boolean> {
         // ループの最低時間
         const totalSleepMs = calculateMilliseconds(oneCycleTime);
         let running = true
