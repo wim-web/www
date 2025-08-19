@@ -37,7 +37,11 @@ var NetworkMapping = {
   "1": "mainnet"
 };
 async function getPools() {
-  const res = await fetch("https://app.spectra.finance/_next/data/7wAc5OcW1pG8yZuqO0Pun/pools.json");
+  const res1 = await fetch("https://app.spectra.finance/portfolio");
+  const html = await res1.text();
+  const match = html.match(/"buildId":"([^"]+)"/);
+  if (!match) throw new Error("Could not find buildId");
+  const res = await fetch(`https://app.spectra.finance/_next/data/${match[1]}/pools.json`);
   if (res.status !== 200) {
     throw new Error(`Failed to fetch pools: ${res.statusText}`);
   }
